@@ -1,0 +1,9 @@
+{
+  "name": "status",
+  "version": "0.0.1",
+  "description": "Plano PD Records Tech Status",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.1.1"
+  }
+}

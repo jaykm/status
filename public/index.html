@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Records Status</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script>
+        
+       
+    </script>
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-faded" style="margin-bottom: 2rem;">
+        <a class="navbar-brand">
+            <img src="/img/jay.ico">
+            Records
+        </a>
+    </nav>
+    <div class="container mx-auto">
+        <div class="row">
+            <div class="col-4">
+                <table class="table text-center">
+                    <div class="card" style="height: 18rem;" ondrop="queueEntered(event, 'records')" ondragover="allowDrop(event)">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Records Queue</h5>
+                            <div class="btn-group-vertical center-block" id="records">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </table>
+            </div>
+            <div class="col-4">
+                <table class="table text-center">
+                    <div class="card"style="height: 18rem;" ondrop="queueEntered(event, 'qc')" ondragover="allowDrop(event)">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">QC Queue</h5>
+                            <div class="btn-group-vertical center-block" id="qc">
+                                
+                                </div>
+                        </div>
+                    </div>
+                </table>
+            </div>
+            <div class="col-4">
+                <table class="table text-center">
+                    <div class="card" style="height: 18rem;" ondrop="queueEntered(event, 'cleanup')" ondragover="allowDrop(event)">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Cleanup</h5>
+                            <div class="btn-group-vertical center-block" id="cleanup">
+                                
+                                </div>
+                        </div>
+                    </div>
+                </table>
+            </div>
+        </div>
+        <div class="row text-center" style="margin-top: 1rem;">
+            <div class="col-6">
+                <table class="table text-center">
+                    <div class="card" style="height: 18rem;" ondrop="queueEntered(event, 'front')" ondragover="allowDrop(event)">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Front</h5>
+                            <div class="btn-group-vertical center-block" id="front">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </table>
+            </div>
+            <div class="col-6">
+                <table class="table text-center">
+                    <div class="card" style="height: 18rem;" ondrop="queueEntered(event, 'mail')" ondragover="allowDrop(event)">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Mail</h5>
+                            <div class="btn-group-vertical center-block" id="mail">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </table>
+            </div>
+            <div class="col center-block" style="margin-top: 1rem;">
+                <div class="card" ondrop="queueEntered(event, 'online')" ondragover="allowDrop(event)">
+                    <div class="card-body">
+                            <h5 class="card-title text-center">Online</h5>
+                            <div class="btn-group-vertical center-block" id="online">
+                                
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+        // Cookie setup
+        if (document.cookie == "")
+        {
+            while (person == null || person == "")
+            {
+                var person = prompt("Please enter your name:");
+            }
+            document.cookie = "name=" + person;
+        }
+        name = document.cookie.split('=')[1];
+
+        // Setup drag and drop
+        function allowDrop(ev)
+        {
+            ev.preventDefault();
+        }
+        function drag(ev)
+        {
+            ev.dataTransfer.setData("Node", ev.target.id);
+        }
+
+        // Initialize the connection
+        var socket = io();
+        socket.emit('newConnection', name);
+
+        // Queue change handling
+        function queueEntered(ev, queue)
+        {
+            ev.preventDefault();
+            socket.emit('queueEntered', queue)
+        }
+
+        // Update Queues
+        socket.on('currentUsers', function(msg)
+        {
+            console.log(msg)
+            var el = document.getElementById('online');
+            while ( el.firstChild ) el.removeChild( el.firstChild );
+            var el = document.getElementById('records');
+            while ( el.firstChild ) el.removeChild( el.firstChild );
+            var el = document.getElementById('qc');
+            while ( el.firstChild ) el.removeChild( el.firstChild );
+            var el = document.getElementById('cleanup');
+            while ( el.firstChild ) el.removeChild( el.firstChild );
+            var el = document.getElementById('front');
+            while ( el.firstChild ) el.removeChild( el.firstChild );
+            var el = document.getElementById('mail');
+            while ( el.firstChild ) el.removeChild( el.firstChild );
+            for (var u in msg)
+            {
+                var end = "dark disabled\">" + msg[u]['name'] + "</button>";
+                if(u == socket.id)
+                {
+                    end = "dark\" draggable=\"true\">" + msg[u]['name'] + "</button>";
+                }
+                if(msg[u]['status'] == 'online')
+                {
+                    document.querySelector("#online").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                }
+                if(msg[u]['status'] == 'records')
+                {
+                    document.querySelector("#records").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                }
+                if(msg[u]['status'] == 'qc')
+                {
+                    document.querySelector("#qc").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                }
+                if(msg[u]['status'] == 'cleanup')
+                {
+                    document.querySelector("#cleanup").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                }
+                if(msg[u]['status'] == 'front')
+                {
+                    document.querySelector("#front").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                }
+                if(msg[u]['status'] == 'mail')
+                {
+                    document.querySelector("#mail").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                }
+            }
+        });
+    </script>
+  </body>
+</html>
