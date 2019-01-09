@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Records Status</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/dataTables.bootstrap.css" rel="stylesheet">
+  </head>
+  <body>
+     <h2 class="text-center">Admin Panel</h2>
+    <body>
+        <div class="container-fluid">
+  
+          <div id='table-container'></div>
+            <button class="btn btn-warning" onclick="clearCSV()">Clear CSV</button>
+    
+        </div>
+        <div class="container">
+          <div class="row">
+              <button class="btn btn-danger center-block" onclick="reset()"> Reset Status</button>
+          </div>
+        </div>
+
+        <footer class='footer'>
+          <div class='container-fluid'>
+              <p class='text-center'><img src="/img/jay.ico"> © JayKM 2018</p>
+          </div>
+      </footer>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/jquery.csv.min.js"></script>
+    <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="js/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="js/csv_to_html_table.js"></script>
+
+
+    <script type="text/javascript">
+      function format_link(link){
+        if (link)
+          return "<a href='" + link + "' target='_blank'>" + link + "</a>";
+        else
+          return "";
+      }
+
+      CsvToHtmlTable.init({
+        csv_path: 'data.csv',
+        element: 'table-container', 
+        allow_download: true,
+        csv_options: {separator: ',', delimiter: '"'},
+        datatables_options: {"paging": false},
+        custom_formatting: [[4, format_link]]
+      });
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+      function clearCSV()
+      {
+        socket.emit('clearCSV', true);
+        location.reload();
+      }
+      function reset()
+      {
+        socket.emit('reset');
+        location.reload();
+      }
+    </script>
+  </body>
+</html>

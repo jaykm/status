@@ -11,13 +11,13 @@
     </script>
   </head>
   <body>
-    <nav class="navbar navbar-light bg-faded" style="margin-bottom: 2rem;">
+    <!-- <nav class="navbar navbar-light bg-faded">
         <a class="navbar-brand">
             <img src="/img/jay.ico">
             Records
         </a>
-    </nav>
-    <div class="container mx-auto">
+    </nav> -->
+    <div class="container mx-auto" style="margin-top: 2rem;">
         <div class="row">
             <div class="col-4">
                 <table class="table text-center">
@@ -38,7 +38,7 @@
                             <h5 class="card-title text-center">QC Queue</h5>
                             <div class="btn-group-vertical center-block" id="qc">
                                 
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </table>
@@ -48,15 +48,37 @@
                     <div class="card" style="height: 18rem;" ondrop="queueEntered(event, 'cleanup')" ondragover="allowDrop(event)">
                         <div class="card-body">
                             <h5 class="card-title text-center">Cleanup</h5>
-                            <div class="btn-group-vertical center-block" id="cleanup">
-                                
+                            <div class="row">
+                                <div class="btn-group-vertical center-block col-sm-6" id="cleanup">
+
                                 </div>
+                                <div class="btn-group-vertical col-sm-6" id="cleanupTimes">
+                                    <button type="button" class="btn" id="cleanup0" onclick="cleanupQueue(0)">6 am-8 am</button>
+                                    <button type="button" class="btn" id="cleanup1" onclick="cleanupQueue(1)">9 am-11 am</button>
+                                    <button type="button" class="btn" id="cleanup2" onclick="cleanupQueue(2)">1 pm-3 pm</button>
+                                    <button type="button" class="btn" id="cleanup3" onclick="cleanupQueue(2)">4 pm-6 pm</button>
+                                    <button type="button" class="btn" id="cleanup4" onclick="cleanupQueue(2)">10 pm-12 am</button>
+                                    <button type="button" class="btn" id="cleanup5" onclick="cleanupQueue(2)">3 am-5 am</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </table>
             </div>
         </div>
-        <div class="row text-center" style="margin-top: 1rem;">
+        <div class="row" style="margin-top: 1rem;">
+            <!-- <div class="col-4">
+                <table class="table text-center">
+                    <div class="card" style="height: 18rem;" ondrop="queueEntered(event, 'warnings')" ondragover="allowDrop(event)">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Warnings</h5>
+                            <div class="btn-group-vertical center-block" id="warnings">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </table>
+            </div> -->
             <div class="col-6">
                 <table class="table text-center">
                     <div class="card" style="height: 18rem;" ondrop="queueEntered(event, 'front')" ondragover="allowDrop(event)">
@@ -70,27 +92,49 @@
                 </table>
             </div>
             <div class="col-6">
-                <table class="table text-center">
-                    <div class="card" style="height: 18rem;" ondrop="queueEntered(event, 'mail')" ondragover="allowDrop(event)">
+                <table class="table">
+                    <div class="card" style="height: 18rem;">
                         <div class="card-body">
                             <h5 class="card-title text-center">Mail</h5>
-                            <div class="btn-group-vertical center-block" id="mail">
-                                
+                            <div class="btn-group-vertical center-block" id="mail" style="margin-top: 3rem;">
+                                <button type="button" class="btn" id="mail0" onclick="mailQueue(0)">7:30 am</button>
+                                <button type="button" class="btn" id="mail1" onclick="mailQueue(1)">12:30 pm</button>
+                                <button type="button" class="btn" id="mail2" onclick="mailQueue(2)">7:30 pm</button>
                             </div>
                         </div>
                     </div>
                 </table>
             </div>
-            <div class="col center-block" style="margin-top: 1rem;">
+        </div>
+        <div class="row" style="margin-top: 1rem;">
+            <div class="col center-block">
                 <div class="card" ondrop="queueEntered(event, 'online')" ondragover="allowDrop(event)">
                     <div class="card-body">
-                            <h5 class="card-title text-center">Online</h5>
-                            <div class="btn-group-vertical center-block" id="online">
-                                
-                            </div>
+                        <h5 class="card-title text-center">Online</h5>
+                        <div class="btn-group-vertical center-block" id="online">
+                            
                         </div>
+                    </div>
                 </div>
             </div>
+            <div class="col center-block">
+                <div class="card" ondrop="queueEntered(event, 'unavailable')" ondragover="allowDrop(event)">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Unavailable</h5>
+                        <div class="btn-group-vertical center-block" id="unavailable">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row center-block">
+            <br>
+            <footer class='footer'>
+                <div class='container-fluid'>
+                    <p class='text-center'><img src="/img/jay.ico"> © JayKM 2018</p>
+                </div>
+            </footer>
         </div>
     </div>
     
@@ -108,7 +152,7 @@
             {
                 var person = prompt("Please enter your name:");
             }
-            document.cookie = "name=" + person;
+            document.cookie = "name=" + person + ";expires=Fri, 31 Dec 9999 23:59:59 GMT";
         }
         name = document.cookie.split('=')[1];
 
@@ -133,22 +177,33 @@
             socket.emit('queueEntered', queue)
         }
 
+        // Mail queue handling
+        function mailQueue(timeSlot)
+        {
+            socket.emit('mailEntered', timeSlot)
+        }
+
+        // Cleanup queue handling
+        function cleanupQueue(timeSlot)
+        {
+            socket.emit('cleanupEntered', timeSlot)
+        }
+
         // Update Queues
         socket.on('currentUsers', function(msg)
         {
-            console.log(msg)
-            var el = document.getElementById('online');
-            while ( el.firstChild ) el.removeChild( el.firstChild );
-            var el = document.getElementById('records');
-            while ( el.firstChild ) el.removeChild( el.firstChild );
-            var el = document.getElementById('qc');
-            while ( el.firstChild ) el.removeChild( el.firstChild );
-            var el = document.getElementById('cleanup');
-            while ( el.firstChild ) el.removeChild( el.firstChild );
-            var el = document.getElementById('front');
-            while ( el.firstChild ) el.removeChild( el.firstChild );
-            var el = document.getElementById('mail');
-            while ( el.firstChild ) el.removeChild( el.firstChild );
+            // Warnings was removed, add it to this list to use it again
+            var elements = ['online', 'unavailable', 'records', 'qc', 'cleanup', 'front'];
+            for (x in elements)
+            {
+                var el = document.getElementById(elements[x]);
+                while ( el.firstChild ) el.removeChild( el.firstChild );
+            }
+            
+            var mailList = ['7:30 am', '12:30 pm', '7:30 pm'];
+            var cleanupList = ['6 am-8 am', '9 am-11 am', '1 pm-3 pm', '4 pm-6 pm', '10 pm-12 am', '3 am-5 am'];
+            var inMail = [false, false, false];
+            var inCleanup = [false, false, false, false, false, false];
             for (var u in msg)
             {
                 var end = "dark disabled\">" + msg[u]['name'] + "</button>";
@@ -156,29 +211,50 @@
                 {
                     end = "dark\" draggable=\"true\">" + msg[u]['name'] + "</button>";
                 }
-                if(msg[u]['status'] == 'online')
+                if(msg[u]['status'] != '')
                 {
-                    document.querySelector("#online").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                    document.querySelector('#' + msg[u]['status']).innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
                 }
-                if(msg[u]['status'] == 'records')
+                for (i in mailList)
                 {
-                    document.querySelector("#records").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                    if(msg[u]['mail'][i] != null)
+                    {
+                        inMail[i] = true;
+                        document.getElementById('mail' + String(i)).setAttribute( "onClick", "mailQueue(" + String(i) + ")" );
+                        document.getElementById('mail' + String(i)).textContent = msg[u]['name'];
+                        if(u != socket.id)
+                        {
+                            document.getElementById('mail' + String(i)).classList.add('disabled');
+                            document.getElementById('mail' + String(i)).setAttribute( "onClick", "" );
+                        }
+                    }
+                    else if (!inMail[i])
+                    {
+                        document.getElementById('mail' + String(i)).textContent = mailList[i];
+                        document.getElementById('mail' + String(i)).classList.remove('disabled');
+                        document.getElementById('mail' + String(i)).setAttribute( "onClick", "mailQueue(" + String(i) + ")" );
+                    }
                 }
-                if(msg[u]['status'] == 'qc')
+                
+                for (i in cleanupList)
                 {
-                    document.querySelector("#qc").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
-                }
-                if(msg[u]['status'] == 'cleanup')
-                {
-                    document.querySelector("#cleanup").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
-                }
-                if(msg[u]['status'] == 'front')
-                {
-                    document.querySelector("#front").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
-                }
-                if(msg[u]['status'] == 'mail')
-                {
-                    document.querySelector("#mail").innerHTML += "<button type=\"button\" class=\"btn btn-" + end;
+                    if(msg[u]['cleanup'][i] != null)
+                    {
+                        inCleanup[i] = true;
+                        document.getElementById('cleanup' + String(i)).setAttribute( "onClick", "cleanupQueue(" + String(i) + ")" );
+                        document.getElementById('cleanup' + String(i)).textContent = msg[u]['name'];
+                        if(u != socket.id)
+                        {
+                            document.getElementById('cleanup' + String(i)).classList.add('disabled');
+                            document.getElementById('cleanup' + String(i)).setAttribute( "onClick", "" );
+                        }
+                    }
+                    else if (!inCleanup[i])
+                    {
+                        document.getElementById('cleanup' + String(i)).textContent = cleanupList[i];
+                        document.getElementById('cleanup' + String(i)).classList.remove('disabled');
+                        document.getElementById('cleanup' + String(i)).setAttribute( "onClick", "cleanupQueue(" + String(i) + ")" );
+                    }
                 }
             }
         });
